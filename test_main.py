@@ -26,7 +26,7 @@ def test_health(client):
     response = client.get('/')
     assert response.status_code == 200
     assert response.json == 'Healthy'
-    #assert False #for testing Codebuild fail
+    assert False #for testing Codebuild fail
 
 
 def test_auth(client):

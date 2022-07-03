@@ -1,0 +1,50 @@
+eksctl create cluster --name simple-jwt-api --nodes=2 --version=1.22 --instance-types=t2.medium --region=us-east-2
+
+
+eksctl create cluster --name simple-jwt-api --region=us-east-2
+kubectl get nodes
+
+aws sts get-caller-identity
+{
+    "UserId": "AIDARTMX74KQBUVAZCRBY",
+    "Account": "110377296544",
+    "Arn": "arn:aws:iam::110377296544:user/Admin"
+}
+
+110377296544
+
+github token: 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
+
+aws iam delete-role --role-name UdacityFlaskDeployCBKubectlRole
+aws iam create-role --role-name UdacityFlaskDeployCBKubectlRole --assume-role-policy-document file://trust.json --output text --query 'Role.Arn'
+
+aws iam put-role-policy --role-name UdacityFlaskDeployCBKubectlRole --policy-name eks-describe --policy-document file://iam-role-policy.json
+
+kubectl get nodes
+kubectl get -n kube-system configmap/aws-auth -o yaml > ./aws-auth-patch.yml
+
+
+#mapRoles: |
+ - groups:
+   - system:masters
+   rolearn: arn:aws:iam::110377296544:role/UdacityFlaskDeployCBKubectlRole
+   username: build 
+
+
+kubectl patch configmap/aws-auth -n kube-system --patch "$(cat ./aws-auth-patch.yml)"
+
+
+aws ssm put-parameter --name JWT_SECRET --overwrite --value "myjwt" --type SecureString
+aws ssm delete-parameter --name JWT_SECRET
+
+kubectl get nodes
+kubectl get services simple-jwt-api -o wide
+
+a055fadc78f8a412bab88aa9189df051-1349303070.us-east-2.elb.amazonaws.com
+
+export URL="a055fadc78f8a412bab88aa9189df051-1349303070.us-east-2.elb.amazonaws.com"
+export TOKEN=`curl -d '{"email":"<EMAIL>","password":"<PASSWORD>"}' -H "Content-Type: application/json" -X POST $URL/auth  | jq -r '.token'`
+curl --request GET $URL:80/contents -H "Authorization: Bearer ${TOKEN}" | jq
+
+
+
